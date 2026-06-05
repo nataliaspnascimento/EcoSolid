@@ -44,18 +44,43 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## Testes do Sistema (EcoSolid)
 
+O sistema possui uma suíte completa de testes automatizados e scripts de validação na blockchain:
+
+### 1. Testes de Unidade (Unit Tests)
+Validam a lógica isolada de componentes-chave do sistema.
+* **UseCase (`RegisterImpactUseCase.spec.ts`):** Garante a criação correta de ações de impacto (com status inicial `PENDENTE_VALIDACAO`) e a atualização cadastral do cidadão (ex: tipo sanguíneo).
+* **Controller (`ImpactActionController.spec.ts`):** Valida as rotas HTTP `/impact/register` e `/impact/:id/validate`, incluindo o tratamento de erros, verificação de headers e o upgrade automático de nível do cidadão conforme os pontos acumulados.
+
+Para rodar os testes de unidade:
 ```bash
-# unit tests
+# Executar testes unitários
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+
+### 2. Testes de Integração / E2E
+Simulam fluxos completos de transação de ponta a ponta sem depender de uma conexão de banco de dados externa ou rede Sepolia ativa (utiliza mocks/simulação em memória).
+* **Fluxo de Impacto (`impact.e2e-spec.ts`):** Registra uma ação de impacto via POST, valida a ação enviando o código do parceiro nos Headers, realiza a chamada ao blockchain service simulado e confirma as atualizações de pontos e nível do cidadão no banco.
+
+Para rodar os testes de integração E2E:
+```bash
+# Executar testes de integração / e2e
+$ npm run test:e2e
+```
+
+### 3. Validação Real na Blockchain (Sepolia Testnet)
+Caso queira realizar transações reais de teste usando chaves e carteiras reais na rede Sepolia:
+
+1. Configure as credenciais no arquivo `backend/.env` (utilize o `.env.example` como base).
+2. Se necessário, faça o deploy do contrato na Sepolia:
+   ```bash
+   $ npx ts-node scripts/deploy-contract.ts
+   ```
+3. Envie uma transação real e obtenha o link do Etherscan rodando:
+   ```bash
+   $ npx ts-node scripts/test-real-transaction.ts
+   ```
 
 ## Deployment
 
